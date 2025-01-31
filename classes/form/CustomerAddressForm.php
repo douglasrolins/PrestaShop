@@ -121,28 +121,38 @@ class CustomerAddressFormCore extends AbstractForm
     }
 
     public function validate()
-    {
-        $is_valid = true;
+{
+    $is_valid = true;
 
-        $postcode = $this->getField('postcode');
-        if ($postcode && $postcode->isRequired()) {
-            $country = $this->formatter->getCountry();
-            if (!$country->checkZipCode($postcode->getValue())) {
-                $postcode->addError($this->translator->trans(
-                    'Invalid postcode - should look like "%zipcode%"',
-                    ['%zipcode%' => $country->zip_code_format],
-                    'Shop.Forms.Errors'
-                ));
-                $is_valid = false;
-            }
-        }
+    // Verificar o campo de endereço (endereço1)
+    $address = $this->getField('address1'); // Ou 'address' dependendo de como o campo é nomeado
+    if ($address && $address->isRequired() && empty($address->getValue())) {
+        $address->addError($this->translator->trans('Address is required.', [], 'Shop.Forms.Errors'));
+        $is_valid = false;
+    }
 
-        if ($is_valid && Hook::exec('actionValidateCustomerAddressForm', ['form' => $this]) === false) {
+    // Validação do código postal
+    $postcode = $this->getField('postcode');
+    if ($postcode && $postcode->isRequired()) {
+        $country = $this->formatter->getCountry();
+        if (!$country->checkZipCode($postcode->getValue())) {
+            $postcode->addError($this->translator->trans(
+                'Invalid postcode - should look like "%zipcode%"',
+                ['%zipcode%' => $country->zip_code_format],
+                'Shop.Forms.Errors'
+            ));
             $is_valid = false;
         }
-
-        return $is_valid && parent::validate();
     }
+
+    // Executar a ação do hook
+    if ($is_valid && Hook::exec('actionValidateCustomerAddressForm', ['form' => $this]) === false) {
+        $is_valid = false;
+    }
+
+    return $is_valid && parent::validate();
+}
+
 
     public function submit()
     {
