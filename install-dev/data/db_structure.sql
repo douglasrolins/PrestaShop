@@ -27,7 +27,7 @@ CREATE TABLE `PREFIX_address` (
   `postcode` varchar(12) DEFAULT NULL,
   `city` varchar(64) NOT NULL,
   `other` MEDIUMTEXT,
-  `phone` varchar(32) DEFAULT NULL,
+  `phone` varchar(32) DEFAULT NOT NULL,
   `phone_mobile` varchar(32) DEFAULT NULL,
   `vat_number` varchar(32) DEFAULT NULL,
   `dni` varchar(16) DEFAULT NULL,
